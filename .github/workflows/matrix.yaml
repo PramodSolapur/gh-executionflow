@@ -10,14 +10,20 @@ jobs:
           matrix:
             node-version: [12, 14, 16]
             operating-system: [ubuntu-latest, windows-latest]  # ubuntu-latest will run again 3 node versions at the same time windows-latest will also run against 3 node versions. in total 6 jobs will run in parallel
-        runs-on: "${{ matrix.operating-system }}"
+            include:
+              - node-version: 18
+                operating-system: ubuntu-latest
+            exclude:
+              - node-version: 12
+                operating-system: windows-latest
+        runs-on: ${{ matrix.operating-system }}
         steps:
             - name: Get the code
               uses: actions/checkout@v3
             - name: Install nodejs
               uses: actions/setup-node@v3
               with:
-                node-version: "${{ matrix.node-version }}"
+                node-version: ${{ matrix.node-version }}
             - name: Install dependencies
               run: npm ci
             - name: Build the app
